@@ -2,6 +2,7 @@ package ru.practicum.explore.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explore.mapper.HitEntityMapper;
 import ru.practicum.explore.model.EndpointHit;
 import ru.practicum.explore.model.ViewStats;
@@ -12,6 +13,7 @@ import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EndpointHitServiceImpl implements EndpointHitService {
 
     private final EndpointHitRepository endpointHitRepository;
@@ -24,17 +26,15 @@ public class EndpointHitServiceImpl implements EndpointHitService {
     @Override
     public Collection<ViewStats> readAll(LocalDateTime start, LocalDateTime end, Collection<String> uris,
                                          boolean unique) {
-        Collection<ViewStats> viewStats;
 
         if (uris == null && !unique) {
-            viewStats = endpointHitRepository.readAllStats(start, end);
+            return endpointHitRepository.readAllStats(start, end);
         } else if (!unique) {
-            viewStats = endpointHitRepository.readStatsWithUris(start, end, uris);
+            return endpointHitRepository.readStatsWithUris(start, end, uris);
         } else if (uris == null && unique) {
-            viewStats = endpointHitRepository.readStatsWithUniqueViews(start, end);
+            return endpointHitRepository.readStatsWithUniqueViews(start, end);
         } else {
-            viewStats = endpointHitRepository.readStatsWithUrisAndUniqueViews(start, end, uris);
+            return endpointHitRepository.readStatsWithUrisAndUniqueViews(start, end, uris);
         }
-        return viewStats;
     }
 }

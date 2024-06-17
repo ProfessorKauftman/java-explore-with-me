@@ -16,6 +16,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class EndpointHitController {
 
+    private static final String DATE = "yyyy-MM-dd HH:mm:ss";
     private final EndpointHitService endpointHitService;
 
     @PostMapping("/hit")
@@ -25,8 +26,8 @@ public class EndpointHitController {
     }
 
     @GetMapping("/stats")
-    public Collection<ViewStats> readAll(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public Collection<ViewStats> readAll(@RequestParam @DateTimeFormat(pattern = DATE) LocalDateTime start,
+                                         @RequestParam @DateTimeFormat(pattern = DATE) LocalDateTime end,
                                          @RequestParam(required = false) Collection<String> uris,
                                          @RequestParam(defaultValue = "false") Boolean unique) {
         return endpointHitService.readAll(start, end, uris, unique);

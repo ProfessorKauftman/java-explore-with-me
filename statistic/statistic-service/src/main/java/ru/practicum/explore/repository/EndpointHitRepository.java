@@ -15,7 +15,7 @@ public interface EndpointHitRepository extends JpaRepository<HitEntity, Long> {
     @Query("SELECT NEW ru.practicum.explore.model.ViewStats(" +
             "hits.app, hits.uri, COUNT(hits.ip)) " +
             "FROM HitEntity hits " +
-            "WHERE hits.timestamp BETWEEN ?1 AND ?2 " +
+            "WHERE hits.dates BETWEEN ?1 AND ?2 " +
             "GROUP BY hits.app, hits.uri " +
             "ORDER BY COUNT(hits) DESC")
     Collection<ViewStats> readAllStats(LocalDateTime star, LocalDateTime end);
@@ -23,7 +23,7 @@ public interface EndpointHitRepository extends JpaRepository<HitEntity, Long> {
     @Query("SELECT NEW ru.practicum.explore.model.ViewStats(" +
             "hits.app, hits.uri, COUNT(hits.ip)) " +
             "FROM HitEntity hits " +
-            "WHERE hits.timestamp BETWEEN ?1 AND ?2 " +
+            "WHERE hits.dates BETWEEN ?1 AND ?2 " +
             "AND hits.uri IN ?3 " +
             "GROUP BY hits.app, hits.uri " +
             "ORDER BY COUNT(hits) DESC")
@@ -32,7 +32,7 @@ public interface EndpointHitRepository extends JpaRepository<HitEntity, Long> {
     @Query("SELECT NEW ru.practicum.explore.model.ViewStats(" +
             "hits.app, hits.uri, COUNT(DISTINCT hits.ip)) " +
             "FROM HitEntity hits " +
-            "WHERE hits.timestamp BETWEEN ?1 AND ?2 " +
+            "WHERE hits.dates BETWEEN ?1 AND ?2 " +
             "GROUP BY hits.app, hits.uri " +
             "ORDER BY COUNT(DISTINCT hits) DESC")
     Collection<ViewStats> readStatsWithUniqueViews(LocalDateTime start, LocalDateTime end);
@@ -40,7 +40,7 @@ public interface EndpointHitRepository extends JpaRepository<HitEntity, Long> {
     @Query("SELECT NEW ru.practicum.explore.model.ViewStats(" +
             "hits.app, hits.uri, COUNT(DISTINCT hits.ip)) " +
             "FROM HitEntity hits " +
-            "WHERE hits.timestamp BETWEEN ?1 AND ?2 " +
+            "WHERE hits.dates BETWEEN ?1 AND ?2 " +
             "AND hits.uri IN ?3 " +
             "GROUP BY hits.app, hits.uri " +
             "ORDER BY COUNT(DISTINCT hits) DESC")

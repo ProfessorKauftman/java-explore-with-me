@@ -18,12 +18,12 @@ public class HitEntity {
     @Column(nullable = false, length = 50)
     private String app;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 2000)
     private String uri;
 
     @Column(nullable = false, length = 50)
     private String ip;
 
     @Column(nullable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime dates;
 }

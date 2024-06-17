@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 @UtilityClass
 public class HitEntityMapper {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public HitEntity mapToHit(EndpointHit endpointHit) {
         return new HitEntity(
@@ -18,6 +18,6 @@ public class HitEntityMapper {
                 endpointHit.getApp(),
                 endpointHit.getUri(),
                 endpointHit.getIp(),
-                LocalDateTime.parse(endpointHit.getTimestamp(), formatter));
+                LocalDateTime.parse(endpointHit.getTimestamp(), FORMATTER));
     }
 }
