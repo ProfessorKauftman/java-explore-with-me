@@ -35,6 +35,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         return CompilationMapper.mapToCompilationDto(compilationRepository.save(compilation));
     }
 
+    @Transactional
     @Override
     public void deleteCompilation(Long compId) {
         dataSearcher.findCompilationById(compId);

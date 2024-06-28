@@ -3,6 +3,7 @@ package ru.practicum.explore.services.publics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explore.StatsClient;
 import ru.practicum.explore.component.DataSearcher;
 import ru.practicum.explore.dto.EventsParamsReader;
@@ -29,17 +30,19 @@ import static ru.practicum.explore.handler.ErrorHandlerService.FORMATTER;
 @Service
 @RequiredArgsConstructor
 public class PublicEventServiceImpl implements PublicEventService {
+    private static final int YEARS_TO_SUBTRACT = 10;
+    private static final int HOURS_TO_ADD = 1;
 
     private final EventRepository eventRepository;
     private final DataSearcher dataSearcher;
     private final StatsClient statsClient;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<EventShortDto> getAllEvents(EventsParamsReader params, Pageable pageable) {
-        if (params.getRangeStart() != null && params.getRangeEnd() != null) {
-            if (params.getRangeStart().isAfter(params.getRangeEnd())) {
-                throw new InvalidRequestException("The dates in the range are incorrect!");
-            }
+        if (params.getRangeStart() != null && params.getRangeEnd() != null
+                && params.getRangeStart().isAfter(params.getRangeEnd())) {
+            throw new InvalidRequestException("The dates in the range are incorrect!");
         }
 
         Collection<Event> events = eventRepository.getEventsByUserParameters(
@@ -71,6 +74,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EventFullDto getEvent(Long eventId, HttpServletRequest request) {
         Event event = dataSearcher.findEventById(eventId);
@@ -90,11 +94,14 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private long countViews(HttpServletRequest request) {
         List<ViewStats> stats = statsClient.getAll(
-                LocalDateTime.now().minusYears(10).format(FORMATTER),
-                LocalDateTime.now().plusHours(1).format(FORMATTER),
+                LocalDateTime.now().minusYears(YEARS_TO_SUBTRACT).format(FORMATTER),
+                LocalDateTime.now().plusHours(HOURS_TO_ADD).format(FORMATTER),
                 List.of(request.getRequestURI()),
                 true);
 
-        return !stats.isEmpty() ? stats.get(0).getHits() : 0;
+        return stats.stream()
+                .findFirst()
+                .map(stat -> stat.getHits())
+                .orElse(0L);
     }
 }

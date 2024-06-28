@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explore.dto.category.CategoryDto;
 import ru.practicum.explore.mappers.CategoryMapper;
 import ru.practicum.explore.models.Category;
@@ -21,6 +22,7 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
     private final CategoryRepository categoryRepository;
     private final DataSearcher dataSearcher;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<CategoryDto> getAllCategories(Pageable pageable) {
         Page<Category> categories = categoryRepository.findAll(pageable);
@@ -34,6 +36,7 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CategoryDto getCategory(Long catId) {
         Category category = dataSearcher.findCategoryById(catId);

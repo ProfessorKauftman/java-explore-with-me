@@ -40,6 +40,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final LocationRepository locationRepository;
     private final DataSearcher dataSearcher;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<EventShortDto> getAllEvents(Long initiatorId, Pageable pageable) {
         Page<Event> events = eventRepository.getAllInitiatorEvents(initiatorId, pageable);
@@ -76,6 +77,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return EventMapper.mapToEventFullDto(eventRepository.save(event));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EventFullDto getEvent(Long initiatorId, Long eventId) {
         Event event = dataSearcher.findEventById(eventId);
@@ -97,13 +99,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new MismatchException("The only ones that can be changed are pending or canceled");
         }
 
-        if (updateEventUserRequest.getStateAction() != null) {
-            if (updateEventUserRequest.getStateAction() == UserEventState.CANCEL_REVIEW) {
-                eventToUpdate.setState(EventLifecycle.CANCELED.toString());
-            } else {
-                eventToUpdate.setState(EventLifecycle.PENDING.toString());
-            }
-        }
+        eventToUpdate.setState((updateEventUserRequest.getStateAction() != null &&
+                updateEventUserRequest.getStateAction() == UserEventState.CANCEL_REVIEW) ?
+                EventLifecycle.CANCELED.toString() : EventLifecycle.PENDING.toString());
 
         if (updateEventUserRequest.getParticipantLimit() != null && updateEventUserRequest.getParticipantLimit() < 0) {
             throw new InvalidRequestException("Participants' number can't be negative!");
@@ -114,6 +112,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return EventMapper.mapToEventFullDto(eventRepository.save(eventToUpdate));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<ParticipationRequestDto> getEventRequests(Long initiatorId, Long eventId) {
         Collection<EventRequest> requests = eventRequestRepository.getAllByEventId(eventId)

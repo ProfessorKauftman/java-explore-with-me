@@ -3,6 +3,7 @@ package ru.practicum.explore.services.publics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explore.dto.compilation.CompilationDto;
 import ru.practicum.explore.mappers.CompilationMapper;
 import ru.practicum.explore.models.Compilation;
@@ -20,15 +21,12 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CompilationRepository compilationRepository;
     private final DataSearcher dataSearcher;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<CompilationDto> getAllCompilations(Boolean pinned, Pageable pageable) {
-        Collection<Compilation> compilations;
-
-        if (pinned != null) {
-            compilations = compilationRepository.getAllByPinned(pinned, pageable).getContent();
-        } else {
-            compilations = compilationRepository.findAll(pageable).getContent();
-        }
+        Collection<Compilation> compilations = (pinned != null) ?
+                compilationRepository.getAllByPinned(pinned, pageable).getContent() :
+                compilationRepository.findAll(pageable).getContent();
 
         if (compilations.isEmpty()) {
             return new ArrayList<>();
@@ -39,6 +37,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CompilationDto getCompilation(Long compId) {
         Compilation compilation = dataSearcher.findCompilationById(compId);

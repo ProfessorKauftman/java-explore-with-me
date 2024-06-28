@@ -24,6 +24,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final UserRepository userRepository;
     private final DataSearcher dataSearcher;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<UserDto> getAllUsers(List<Long> ids, Pageable pageable) {
         if (ids == null) {
@@ -51,6 +52,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         return UserMapper.mapToUserDto(userRepository.save(user));
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long userId) {
         dataSearcher.findUserById(userId);

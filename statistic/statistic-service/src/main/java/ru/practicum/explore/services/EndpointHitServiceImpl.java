@@ -18,11 +18,11 @@ import java.util.List;
 import static ru.practicum.explore.handler.ErrorHandlerStatistic.FORMATTER;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class EndpointHitServiceImpl implements EndpointHitService {
     private final EndpointHitRepository endpointHitRepository;
 
+    @Transactional
     @Override
     public EndpointHit create(EndpointHit endpointHit) {
         HitEntity hit = HitEntityMapper.mapToHit(endpointHit);
@@ -30,7 +30,9 @@ public class EndpointHitServiceImpl implements EndpointHitService {
         return HitEntityMapper.mapToEndpointHit(endpointHitRepository.save(hit));
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public List<ViewStats> getAll(String startDate, String endDate, List<String> uris, boolean unique) {
         LocalDateTime start = LocalDateTime.parse(decode(startDate), FORMATTER);
         LocalDateTime end = LocalDateTime.parse(decode(endDate), FORMATTER);
@@ -41,13 +43,18 @@ public class EndpointHitServiceImpl implements EndpointHitService {
 
         if (uris == null && !unique) {
             return endpointHitRepository.getAllStats(start, end);
-        } else if (!unique) {
-            return endpointHitRepository.getStatsWithUris(start, end, uris);
-        } else if (uris == null && unique) {
-            return endpointHitRepository.getStatsWithUniqueViews(start, end);
-        } else {
-            return endpointHitRepository.getStatsWithUrisAndUniqueViews(start, end, uris);
         }
+
+        if (!unique) {
+            return endpointHitRepository.getStatsWithUris(start, end, uris);
+        }
+
+        if (uris == null && unique) {
+            return endpointHitRepository.getStatsWithUniqueViews(start, end);
+        }
+
+        return endpointHitRepository.getStatsWithUrisAndUniqueViews(start, end, uris);
+
     }
 
     private String decode(String value) {

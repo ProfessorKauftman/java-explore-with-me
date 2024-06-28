@@ -29,6 +29,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     private final DataSearcher dataSearcher;
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<ParticipationRequestDto> getAllRequests(Long requesterId) {
         dataSearcher.findUserById(requesterId);
 
@@ -56,10 +57,8 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             throw new MismatchException("The event has to be published!");
         }
 
-        if (event.getParticipantLimit() != 0) {
-            if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
-                throw new MismatchException("The limit of participants has been reached!");
-            }
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new MismatchException("The limit of participants has been reached!");
         }
 
         if (requesterId.equals(event.getInitiator().getId())) {

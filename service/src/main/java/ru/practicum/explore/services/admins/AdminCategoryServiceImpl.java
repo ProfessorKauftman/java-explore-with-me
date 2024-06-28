@@ -32,6 +32,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         return CategoryMapper.mapToCategoryDto(categoryRepository.save(category));
     }
 
+    @Transactional
     @Override
     public void deleteCategory(Long catId) {
         dataSearcher.findCategoryById(catId);

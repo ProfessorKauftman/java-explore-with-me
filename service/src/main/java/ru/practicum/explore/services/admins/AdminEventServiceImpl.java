@@ -32,6 +32,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     private final LocationRepository locationRepository;
     private final DataSearcher dataSearcher;
 
+    @Transactional(readOnly = true)
     @Override
     public Collection<EventFullDto> getAllEvents(List<Long> initiators,
                                                  List<String> states,
