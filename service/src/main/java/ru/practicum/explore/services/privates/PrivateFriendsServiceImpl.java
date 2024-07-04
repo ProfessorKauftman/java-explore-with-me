@@ -82,7 +82,11 @@ public class PrivateFriendsServiceImpl implements PrivateFriendsService {
                 .map(UserMapper::mapToUserShortDto)
                 .collect(toList());
 
-        return friends.isEmpty() ? new ArrayList<>() : friends;
+        if (friends.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return friends;
     }
 
     @Transactional(readOnly = true)
